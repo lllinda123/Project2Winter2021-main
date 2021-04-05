@@ -150,7 +150,6 @@ def get_site_instance(site_url):
         park_address = 'Not found address'
     try:
         park_phone = park_footer_parent.find('span', class_='tel').get_text()
-        # sometimes exsit "xxxxx or xxxxx", need to consider it latter.
     except:
         park_phone = 'Not found phone number'
 
@@ -190,7 +189,6 @@ def get_sites_for_state(state_url):
         park_category = p_instance.category
         park_zip_code = p_instance.zipcode
         park_phone = p_instance.phone
-        # might be a problem right here
         site_instance = NationalSite(park_category, park_name, park_address, park_zip_code, park_phone, park_url)
         sites_instance_list.append(site_instance)
 
@@ -198,8 +196,6 @@ def get_sites_for_state(state_url):
 
 
 MAP_KEY = secrets.API_KEY
-# MAP_SECRET = secrets.MAP_SECRET
-# oauth = OAuth1(MAP_KEY, client_secret=MAP_SECRET)
 
 
 def make_request_with_cache_api(base_url, site_object):
@@ -223,8 +219,6 @@ def make_request_with_cache_api(base_url, site_object):
         JSON
     '''
     cache_file = load_cache()
-    # url_text = make_url_request_using_cache(state_url, CACHE_DICT)
-    # cache_file = load_cache(CACHE_FILE_NAME)
     params = {'key': MAP_KEY, 'origin': site_object.zipcode, 'radius': 10, 'maxMatches': 10,
               'ambiguities': 'ignore', 'outFormat': 'json'}
 
@@ -234,7 +228,6 @@ def make_request_with_cache_api(base_url, site_object):
     else:
         print("Fetching")
         response = requests.get(base_url, params).json()
-        # new_request = make_request_api(base_url, params)
         cache_file[site_object.name] = response
         save_cache(cache_file)
         return cache_file[site_object.name]
