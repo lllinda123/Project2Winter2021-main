@@ -11,14 +11,14 @@ import time
 
 
 class NationalSite:
-    '''a national site
+    """a national site
 
     Instance Attributes
     -------------------
     category: string
         the category of a national site (e.g. 'National Park', '')
         some sites have blank category.
-    
+
     name: string
         the name of a national site (e.g. 'Isle Royale')
 
@@ -30,7 +30,7 @@ class NationalSite:
 
     phone: string
         the phone of a national site (e.g. '(616) 319-7906', '307-344-7381')
-    '''
+    """
 
     def __init__(self, category, name, address, zipcode, phone, url=None):
         self.category = category
@@ -82,7 +82,7 @@ def make_url_request_using_cache(url, cache):
 
 
 def build_state_url_dict():
-    ''' Make a dictionary that maps state name to state page url from "https://www.nps.gov"
+    """ Make a dictionary that maps state name to state page url from "https://www.nps.gov"
 
     Parameters
     ----------
@@ -93,7 +93,7 @@ def build_state_url_dict():
     dict
         key is a state name and value is the url
         e.g. {'michigan':'https://www.nps.gov/state/mi/index.htm', ...}
-    '''
+    """
     state_dict = {}
     base_url = 'https://www.nps.gov'
     state_url = base_url + '/index.htm'
@@ -114,18 +114,18 @@ def build_state_url_dict():
        
 
 def get_site_instance(site_url):
-    '''Make an instances from a national site URL.
-    
+    """Make an instances from a national site URL.
+
     Parameters
     ----------
     site_url: string
         The URL for a national site page in nps.gov
-    
+
     Returns
     -------
     instance
         a national site instance
-    '''
+    """
     CACHE_DICT = load_cache()
     url_text = make_url_request_using_cache(site_url, CACHE_DICT)
     park_soup = BeautifulSoup(url_text, 'html.parser')
@@ -159,18 +159,18 @@ def get_site_instance(site_url):
 
 
 def get_sites_for_state(state_url):
-    '''Make a list of national site instances from a state URL.
-    
+    """Make a list of national site instances from a state URL.
+
     Parameters
     ----------
     state_url: string
         The URL for a state page in nps.gov
-    
+
     Returns
     -------
     list
         a list of national site instances
-    '''
+    """
     base_url = 'https://www.nps.gov'
     sites_instance_list = []
     CACHE_DICT = load_cache()
@@ -199,7 +199,7 @@ MAP_KEY = secrets.API_KEY
 
 
 def make_request_with_cache_api(base_url, site_object):
-    '''Check the cache for a saved result for this base_url+params:values
+    """Check the cache for a saved result for this base_url+params:values
     combo. If the result is found, return it. Otherwise send a new
     request, save it, then return it.
 
@@ -217,7 +217,7 @@ def make_request_with_cache_api(base_url, site_object):
     dict
         the results of the query as a dictionary loaded from cache
         JSON
-    '''
+    """
     cache_file = load_cache()
     params = {'key': MAP_KEY, 'origin': site_object.zipcode, 'radius': 10, 'maxMatches': 10,
               'ambiguities': 'ignore', 'outFormat': 'json'}
@@ -234,24 +234,24 @@ def make_request_with_cache_api(base_url, site_object):
 
 
 def get_nearby_places(site_object):
-    '''Obtain API data from MapQuest API.
-    
+    """Obtain API data from MapQuest API.
+
     Parameters
     ----------
     site_object: object
         an instance of a national site
-    
+
     Returns
     -------
     dict
         a converted API return from MapQuest API
-    '''
+    """
     base_url = 'http://www.mapquestapi.com/search/v2/radius'
     nearby_dict = make_request_with_cache_api(base_url, site_object)
     return nearby_dict
 
 
-class Nearby_place():
+class NearbyPlace:
     def __init__(self, name, category, street_address, city_name):
         self.name = name
         self.category = category
@@ -263,7 +263,7 @@ class Nearby_place():
 
 
 def make_nearby_instance_list(nearby_dict):
-    '''
+    """
     make the nearby dictionary into instance
 
     Parameter:
@@ -273,7 +273,7 @@ def make_nearby_instance_list(nearby_dict):
     Return:
     -----------
     list of nearby place instances
-    '''
+    """
 
     nearby_instance_list = []
 
@@ -301,43 +301,43 @@ def make_nearby_instance_list(nearby_dict):
         except:
             nearby_city_name = 'no city'
 
-        nearby_instance = Nearby_place(nearby_name, nearby_category, nearby_street_address, nearby_city_name)
+        nearby_instance = NearbyPlace(nearby_name, nearby_category, nearby_street_address, nearby_city_name)
         nearby_instance_list.append(nearby_instance)
 
     return nearby_instance_list
 
 
-def get_key(dict, value):
-    '''
+def get_key(dictionary, value):
+    """
     Input a dictionary and a value, and get the key of the value.
     ----------
     parameter:
-    dict: dictionary
+    dictionary: dictionary
     value: a value of the dictionary, in this case it's a string
     ----------
     return
 
     k: string, the corresponding key for the input value.
 
-    '''
+    """
 
-    return [k for k, v in dict.items() if v == value][0]
+    return [k for k, v in dictionary.items() if v == value][0]
 
 
-states={'alaska': 'ak', 'alabama': 'al', 'arkansas': 'ar', 'american samoa': 'as',
-        'arizona': 'az', 'california': 'ca', 'colorado': 'co', 'connecticut': 'ct',
-        'district of columbia': 'dc', 'delaware': 'de', 'florida': 'fl', 'georgia': 'ga',
-        'guam': 'gu', 'hawaii': 'hi', 'iowa': 'ia', 'idaho': 'id', 'illinois': 'il',
-        'indiana': 'in', 'kansas': 'ks', 'kentucky': 'ky', 'louisiana': 'la',
-        'massachusetts': 'ma', 'maryland': 'md', 'maine': 'me', 'michigan': 'mi',
-        'minnesota': 'mn', 'missouri': 'mo', 'northern mariana islands': 'mp',
-        'mississippi': 'ms', 'montana': 'mt', 'national': 'na', 'north carolina': 'nc',
-        'north dakota': 'nd', 'nebraska': 'ne', 'new hampshire': 'nh', 'new jersey': 'nj',
-        'new mexico': 'nm', 'nevada': 'nv', 'new york': 'ny', 'ohio': 'oh', 'oklahoma': 'ok',
-        'oregon': 'or', 'pennsylvania': 'pa', 'puerto rico': 'pr', 'rhode island': 'ri',
-        'south carolina': 'sc', 'south dakota': 'sd', 'tennessee': 'tn', 'texas': 'tx',
-        'utah': 'ut', 'virginia': 'va', 'virgin islands': 'vi', 'vermont': 'vt',
-        'washington': 'wa', 'wisconsin': 'wi', 'west virginia': 'wv', 'wyoming': 'wy'}
+states = {'alaska': 'ak', 'alabama': 'al', 'arkansas': 'ar', 'american samoa': 'as',
+          'arizona': 'az', 'california': 'ca', 'colorado': 'co', 'connecticut': 'ct',
+          'district of columbia': 'dc', 'delaware': 'de', 'florida': 'fl', 'georgia': 'ga',
+          'guam': 'gu', 'hawaii': 'hi', 'iowa': 'ia', 'idaho': 'id', 'illinois': 'il',
+          'indiana': 'in', 'kansas': 'ks', 'kentucky': 'ky', 'louisiana': 'la',
+          'massachusetts': 'ma', 'maryland': 'md', 'maine': 'me', 'michigan': 'mi',
+          'minnesota': 'mn', 'missouri': 'mo', 'northern mariana islands': 'mp',
+          'mississippi': 'ms', 'montana': 'mt', 'national': 'na', 'north carolina': 'nc',
+          'north dakota': 'nd', 'nebraska': 'ne', 'new hampshire': 'nh', 'new jersey': 'nj',
+          'new mexico': 'nm', 'nevada': 'nv', 'new york': 'ny', 'ohio': 'oh', 'oklahoma': 'ok',
+          'oregon': 'or', 'pennsylvania': 'pa', 'puerto rico': 'pr', 'rhode island': 'ri',
+          'south carolina': 'sc', 'south dakota': 'sd', 'tennessee': 'tn', 'texas': 'tx',
+          'utah': 'ut', 'virginia': 'va', 'virgin islands': 'vi', 'vermont': 'vt',
+          'washington': 'wa', 'wisconsin': 'wi', 'west virginia': 'wv', 'wyoming': 'wy'}
 
 
 if __name__ == "__main__":
