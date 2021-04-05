@@ -290,9 +290,9 @@ def make_nearby_instance_list(nearby_dict):
         try:
             nearby_street_address = member['fields']['address'].strip()
             if nearby_street_address == '':
-                nearby_street_address = 'no street address'
+                nearby_street_address = 'no address'
         except:
-            nearby_street_address = 'no street address'
+            nearby_street_address = 'no address'
 
         try:
             nearby_city_name = member['fields']['city'].strip()
@@ -307,71 +307,27 @@ def make_nearby_instance_list(nearby_dict):
     return nearby_instance_list
 
 
-def get_key(dictionary, value):
-    """
-    Input a dictionary and a value, and get the key of the value.
-    ----------
-    parameter:
-    dictionary: dictionary
-    value: a value of the dictionary, in this case it's a string
-    ----------
-    return
-
-    k: string, the corresponding key for the input value.
-
-    """
-
-    return [k for k, v in dictionary.items() if v == value][0]
-
-
-states = {'alaska': 'ak', 'alabama': 'al', 'arkansas': 'ar', 'american samoa': 'as',
-          'arizona': 'az', 'california': 'ca', 'colorado': 'co', 'connecticut': 'ct',
-          'district of columbia': 'dc', 'delaware': 'de', 'florida': 'fl', 'georgia': 'ga',
-          'guam': 'gu', 'hawaii': 'hi', 'iowa': 'ia', 'idaho': 'id', 'illinois': 'il',
-          'indiana': 'in', 'kansas': 'ks', 'kentucky': 'ky', 'louisiana': 'la',
-          'massachusetts': 'ma', 'maryland': 'md', 'maine': 'me', 'michigan': 'mi',
-          'minnesota': 'mn', 'missouri': 'mo', 'northern mariana islands': 'mp',
-          'mississippi': 'ms', 'montana': 'mt', 'national': 'na', 'north carolina': 'nc',
-          'north dakota': 'nd', 'nebraska': 'ne', 'new hampshire': 'nh', 'new jersey': 'nj',
-          'new mexico': 'nm', 'nevada': 'nv', 'new york': 'ny', 'ohio': 'oh', 'oklahoma': 'ok',
-          'oregon': 'or', 'pennsylvania': 'pa', 'puerto rico': 'pr', 'rhode island': 'ri',
-          'south carolina': 'sc', 'south dakota': 'sd', 'tennessee': 'tn', 'texas': 'tx',
-          'utah': 'ut', 'virginia': 'va', 'virgin islands': 'vi', 'vermont': 'vt',
-          'washington': 'wa', 'wisconsin': 'wi', 'west virginia': 'wv', 'wyoming': 'wy'}
-
-
 if __name__ == "__main__":
     base_url = 'https://www.nps.gov'
     x = 0
+    states_url_dict = build_state_url_dict()
 
     while True:
         state = input('Enter a state name (e.g. Michigan, michigan) or "exit":').lower()
 
-        if len(state) == 2 and state in states.values():
-            state_url = base_url + '/' + state + '/' + '/index.htm'
-        elif state == 'exit':
+        if state == 'exit':
             break
-        elif state in states.keys():
-            state_url = base_url + '/' + states[state] + '/' + '/index.htm'
+        elif state in states_url_dict.keys():
+            sites_list = get_sites_for_state(states_url_dict[state])
+            print('-' * 50)
+            print("List of national sites in", state)
+            print('-' * 50)
+            for i, site in enumerate(sites_list):
+                print('[', i+1, '] ', site.info())
+
         else:
             print('[Error] Enter proper state name \n')
             continue
-        sites_list = get_sites_for_state(state_url)
-
-        if len(state) != 2:
-            print('-' * 50)
-            print("List of national sites in", state.lower())
-            print('-' * 50)
-        if len(state) == 2:
-            print('-' * 50)
-            print("List of national sites in", get_key(states, state).lower())
-            print('-' * 50)
-
-        i = 1
-        while i <= len(sites_list):
-            for site in sites_list:
-                print('[', i, '] ', site.info())
-                i += 1
 
         while True:
             nearby_instance_list = []
